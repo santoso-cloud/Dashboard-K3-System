@@ -1,7 +1,7 @@
 'use strict';
 const { validate } = require('./validation');
 // Dependencies diterima dari app agar memakai pool PostgreSQL yang sudah ada.
-module.exports = function createRegisterController({ pool, bcrypt }) {
+module.exports = function createRegisterController({ pool, bcrypt, passwordService }) {
   return async function register(req, res) {
     const { data, errors } = validate(req.body);
     if (Object.keys(errors).length) return res.status(400).json({ success: false, message: 'Periksa kembali formulir Anda.', errors });
@@ -11,7 +11,9 @@ module.exports = function createRegisterController({ pool, bcrypt }) {
       if (!role.rows.length) return res.status(503).json({ success: false, message: 'Pendaftaran belum tersedia. Hubungi administrator.' });
       const duplicate = await pool.query('SELECT id FROM users WHERE lower(username) = $1 OR lower(email) = $2 LIMIT 1', [data.username, data.email]);
       if (duplicate.rows.length) return res.status(409).json({ success: false, message: 'Username atau email sudah terdaftar.' });
-      const hash = await bcrypt.hash(data.password, 12);
+      const hash = passwordService
+        ? await passwordService.hashPassword(data.password)
+        : await bcrypt.hash(data.password, 12);
       const result = await pool.query(`INSERT INTO users
         (role_id, employee_number, name, username, email, password_hash, phone, department, position, status)
         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'active')

@@ -5,6 +5,7 @@
   "description": "Modul registrasi PT. JASIL \u2014 K3 Safety",
   "scripts": {
     "start": "node server.js",
+    "dev": "node --watch server.js",
     "test": "node --test test/*.test.js"
   },
   "engines": {

@@ -1,7 +1,7 @@
 const express = require("express");
-const bcrypt = require("bcrypt");
 const pool = require("../config/db");
 const { auth, authorize } = require("../middleware/middleware");
+const { hashPassword } = require("../src/services/passwordService");
 
 const router = express.Router();
 
@@ -80,7 +80,7 @@ router.post(
         });
       }
 
-      const hash = await bcrypt.hash(password, 12);
+      const hash = await hashPassword(password);
 
       const result = await pool.query(
         `
@@ -152,7 +152,7 @@ router.put(
             phone = $5, department = $6, status = $7, updated_at = CURRENT_TIMESTAMP`;
 
       if (password) {
-        values.push(await bcrypt.hash(password, 12));
+        values.push(await hashPassword(password));
         query += `, password_hash = $${values.length}`;
       }
 

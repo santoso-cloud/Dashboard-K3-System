@@ -1,9 +1,9 @@
 const express = require("express");
-const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const pool = require("../config/db");
 const { auth } = require("../middleware/middleware");
+const { hashPassword, verifyPassword } = require("../src/services/passwordService");
 
 const router = express.Router();
 
@@ -91,20 +91,24 @@ router.post("/login", async (req, res) => {
 
 
         // Cek password
-        const passwordMatch =
-            await bcrypt.compare(
-                password,
-                user.password_hash
-            );
+        const verification = await verifyPassword(password, user.password_hash);
 
 
-        if (!passwordMatch) {
+        if (!verification.matches) {
 
             return res.status(401).json({
                 success: false,
                 message: "Username atau password salah"
             });
 
+        }
+
+        if (verification.needsRehash) {
+            const passwordHash = await hashPassword(password);
+            await pool.query(
+                "UPDATE users SET password_hash = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2",
+                [passwordHash, user.id]
+            );
         }
 
 
