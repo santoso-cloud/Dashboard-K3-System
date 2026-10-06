@@ -67,7 +67,27 @@ function showProfileName(elements) {
   }
 }
 
+function addLogoutButton() {
+  if (!document.querySelector(".sidebar") || document.querySelector(".sidebar-logout")) return;
+  const profile = document.querySelector(".profile");
+  if (!profile) return;
+
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "sidebar-logout";
+  button.innerHTML = '<i class="fa-solid fa-right-from-bracket"></i><span>Logout</span>';
+  button.title = "Keluar dari sistem";
+  button.addEventListener("click", () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
+    window.location.href = "/";
+  });
+  profile.insertAdjacentElement("afterend", button);
+}
+
 function initializeDashboardLogin() {
+  addLogoutButton();
   const profiles = document.querySelectorAll(".profile");
   if (!profiles.length) return;
 
@@ -128,7 +148,7 @@ function initializeDashboardLogin() {
       showProfileName(elements);
       elements.loginForm.reset();
       closeLoginPopup(elements);
-      window.location.href = "apd.html";
+      window.location.href = "index.html";
     } catch (error) {
       elements.loginMessage.textContent = error.message || "Tidak dapat terhubung ke server.";
     } finally {

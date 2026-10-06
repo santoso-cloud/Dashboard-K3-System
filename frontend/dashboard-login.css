@@ -14,6 +14,28 @@
   outline: 3px solid rgba(22, 163, 74, .15);
 }
 
+.sidebar-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #fecaca;
+  border-radius: 14px;
+  padding: 12px 15px;
+  background: #fff;
+  color: #b91c1c;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.sidebar-logout:hover,
+.sidebar-logout:focus-visible {
+  border-color: #ef4444;
+  background: #fef2f2;
+  outline: 3px solid rgba(239, 68, 68, .12);
+}
+
 .login-popup {
   position: fixed;
   top: 94px;

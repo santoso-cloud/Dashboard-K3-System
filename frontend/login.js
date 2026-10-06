@@ -42,7 +42,7 @@ if (
 ) {
 
     window.location.href =
-        "apd.html";
+        "index.html";
 
 }
 
@@ -204,9 +204,9 @@ loginForm.addEventListener(
             );
 
 
-            // Masuk halaman APD
+            // Masuk halaman dashboard
             window.location.href =
-                "apd.html";
+                "index.html";
 
 
         } catch (error) {

@@ -1,169 +1,55 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>K3 Safety Dashboard</title>
-  <link rel="stylesheet" href="css/style.css">
-  <style>
-    body.auth-page {
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      padding: 24px;
-      background:
-        radial-gradient(circle at 10% 10%, rgba(20, 108, 67, .16), transparent 28%),
-        radial-gradient(circle at 90% 90%, rgba(14, 116, 144, .14), transparent 30%),
-        #eef5f2;
-    }
-
-    .auth-page .auth-shell {
-      width: min(100%, 430px);
-    }
-
-    .auth-page .login-card {
-      margin: 0;
-      padding: 38px 34px 30px;
-      border: 1px solid rgba(20, 108, 67, .1);
-      border-radius: 24px;
-      box-shadow: 0 22px 55px rgba(22, 54, 41, .14);
-    }
-
-    .auth-page .brand-mark {
-      width: 66px;
-      height: 66px;
-      display: grid;
-      place-items: center;
-      margin: 0 auto 18px;
-      border-radius: 20px;
-      color: #fff;
-      font-size: 28px;
-      background: linear-gradient(135deg, #16804e, #0b5d42);
-      box-shadow: 0 12px 22px rgba(20, 108, 67, .23);
-    }
-
-    .auth-page .login-card h1 {
-      margin-bottom: 7px;
-      color: #173b2d;
-      font-size: 26px;
-      text-align: center;
-    }
-
-    .auth-page .auth-subtitle {
-      margin: 0 auto 27px;
-      color: #6b7d75;
-      font-size: 14px;
-      text-align: center;
-      line-height: 1.55;
-    }
-
-    .auth-page .auth-form {
-      display: grid;
-      gap: 14px;
-    }
-
-    .auth-page .auth-form label {
-      display: block;
-      margin-bottom: 7px;
-      color: #365449;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .auth-page .auth-form input {
-      width: 100%;
-      min-height: 49px;
-      background: #f8fbfa;
-      border-color: #d4e2dc;
-      border-radius: 11px;
-    }
-
-    .auth-page .auth-form input:focus {
-      border-color: #16804e;
-      box-shadow: 0 0 0 3px rgba(22, 128, 78, .12);
-      outline: none;
-    }
-
-    .auth-page .auth-submit {
-      width: 100%;
-      min-height: 49px;
-      margin-top: 5px;
-      border-radius: 11px;
-      background: linear-gradient(135deg, #16804e, #0b5d42);
-      box-shadow: 0 9px 18px rgba(20, 108, 67, .18);
-    }
-
-    .auth-page .auth-submit:hover {
-      background: linear-gradient(135deg, #1a8f5a, #08603f);
-      transform: translateY(-1px);
-    }
-
-    .auth-page .auth-footer {
-      margin: 23px 0 0;
-      color: #84958e;
-      font-size: 12px;
-      text-align: center;
-    }
-
-    @media (max-width: 480px) {
-      .auth-page .login-card { padding: 30px 22px 25px; }
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | K3 Safety</title>
+  <link rel="stylesheet" href="apd.css">
+  <link rel="stylesheet" href="dashboard-login.css">
+  <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="icon" href="/favicon.ico">
 </head>
-<body class="auth-page">
-  <main class="auth-shell">
-    <section id="loginCard" class="card login-card">
-      <div class="brand-mark" aria-hidden="true">🦺</div>
-      <h1>K3 Safety System</h1>
-      <p class="auth-subtitle">Sistem Informasi Keselamatan &amp; Kesehatan Kerja</p>
-      <form id="loginForm" class="auth-form">
-        <div>
-          <label for="username">Username atau email</label>
-          <input id="username" placeholder="Masukkan username atau email" autocomplete="username" required>
-        </div>
-        <div>
-          <label for="password">Password</label>
-          <input id="password" type="password" placeholder="Masukkan password" autocomplete="current-password" required>
-        </div>
-        <button class="auth-submit" type="submit">Masuk ke Sistem</button>
-      </form>
-      <p id="loginMessage"></p>
-      <p class="auth-footer">Akses aman untuk pengguna terdaftar<br>© 2026 K3 Safety Management System</p>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-icon"><i class="fa-solid fa-shield-halved"></i></div><div><h2>K3 SAFETY</h2><p>Safety First, Always</p></div></div>
+    <nav class="nav-menu">
+      <a href="index.html" class="active"><i class="fa-solid fa-chart-line"></i><span>Dashboard</span></a>
+      <a href="insiden.html"><i class="fa-solid fa-helmet-safety"></i><span>Insiden</span><small>0</small></a>
+      <a href="observasi.html"><i class="fa-solid fa-clipboard-check"></i><span>Observasi &amp; Inspeksi</span></a>
+      <a href="izin-kerja.html"><i class="fa-solid fa-calendar-check"></i><span>Izin Kerja</span></a>
+      <a href="training.html"><i class="fa-solid fa-graduation-cap"></i><span>Training K3</span></a>
+      <a href="apd.html"><i class="fa-solid fa-toolbox"></i><span>APD &amp; Peralatan</span></a>
+      <a href="dokumen.html"><i class="fa-solid fa-file-lines"></i><span>Dokumen</span></a>
+      <a href="audit.html"><i class="fa-solid fa-clipboard-list"></i><span>Audit</span></a>
+      <a href="tindakan-korektif.html"><i class="fa-solid fa-circle-check"></i><span>Tindakan Korektif</span><small class="orange">0</small></a>
+      <a href="pelaporan.html"><i class="fa-solid fa-chart-pie"></i><span>Pelaporan</span></a>
+      <a href="risiko.html"><i class="fa-solid fa-triangle-exclamation"></i><span>Manajemen Risiko</span></a>
+      <a href="pengguna.html"><i class="fa-solid fa-users"></i><span>Pengguna</span></a>
+      <a href="pengaturan.html"><i class="fa-solid fa-gear"></i><span>Pengaturan</span></a>
+    </nav>
+    <div class="safety-card"><h3>SAFETY<br>STARTS<br>WITH YOU</h3><p>Utamakan K3 dalam setiap pekerjaan demi masa depan yang lebih baik.</p><div class="worker">👷‍♂️</div></div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar"><div><h2 id="dashboard-greeting">Selamat datang 👋</h2><p>Ringkasan kinerja keselamatan dan kesehatan kerja</p></div><div class="top-info"><div><i class="fa-regular fa-calendar"></i> <span id="dashboard-date">-</span></div><div><i class="fa-solid fa-location-dot"></i> Jakarta, Indonesia</div><div class="bell"><i class="fa-regular fa-bell"></i><span>0</span></div><button class="profile" type="button" aria-expanded="false" aria-controls="loginPopup">👨‍💼 <b>Admin K3</b></button></div></header>
+
+    <section class="page-title"><div><h1>Dashboard K3 Safety</h1><p>Dashboard <i class="fa-solid fa-chevron-right"></i> Ringkasan Sistem</p></div><div class="dashboard-status" id="dashboard-status"><i class="fa-solid fa-rotate"></i> Memuat data...</div></section>
+
+    <section class="stats dashboard-stats" aria-label="KPI utama">
+      <div class="stat"><div><p>Total Insiden</p><h2 id="kpi-incidents" class="red">0</h2><span id="kpi-incidents-note">Data tercatat</span></div><i class="fa-solid fa-helmet-safety icon red-bg"></i></div>
+      <div class="stat"><div><p>Observasi &amp; Inspeksi</p><h2 id="kpi-observations" class="blue">0</h2><span>Temuan keselamatan</span></div><i class="fa-solid fa-clipboard-check icon blue-bg"></i></div>
+      <div class="stat"><div><p>Izin Kerja</p><h2 id="kpi-permits" class="orange-text">0</h2><span id="kpi-permits-note">Seluruh status</span></div><i class="fa-solid fa-calendar-check icon orange-bg"></i></div>
+      <div class="stat"><div><p>Training K3</p><h2 id="kpi-training" class="green">0</h2><span>Program training</span></div><i class="fa-solid fa-graduation-cap icon green-bg"></i></div>
+      <div class="stat"><div><p>APD &amp; Peralatan</p><h2 id="kpi-apd" class="purple">0</h2><span>Total stok terdata</span></div><i class="fa-solid fa-toolbox icon purple-bg"></i></div>
+      <div class="stat"><div><p>Dokumen</p><h2 id="kpi-documents" class="blue">0</h2><span>Dokumen terkelola</span></div><i class="fa-solid fa-file-lines icon blue-bg"></i></div>
+      <div class="stat"><div><p>Audit</p><h2 id="kpi-audits" class="orange-text">0</h2><span id="kpi-audits-note">Seluruh audit</span></div><i class="fa-solid fa-clipboard-list icon orange-bg"></i></div>
+      <div class="stat"><div><p>Tindakan Korektif</p><h2 id="kpi-actions" class="red">0</h2><span id="kpi-actions-note">Perlu pemantauan</span></div><i class="fa-solid fa-circle-check icon red-bg"></i></div>
     </section>
 
-    <section id="app" class="hidden">
-      <header>
-        <div><h1>Dashboard K3 Safety</h1><p id="welcome"></p></div>
-        <button id="logoutBtn" class="danger">Logout</button>
-      </header>
-      <div class="stats">
-        <article class="card"><span>Insiden</span><strong id="incidents">0</strong></article>
-        <article class="card"><span>Observasi</span><strong id="observations">0</strong></article>
-        <article class="card"><span>Near Miss</span><strong id="nearMiss">0</strong></article>
-        <article class="card"><span>Selesai</span><strong id="completed">0</strong></article>
-      </div>
-
-      <section class="card">
-        <h2>Input Insiden</h2>
-        <form id="incidentForm" class="grid">
-          <input id="title" placeholder="Judul" required>
-          <input id="location" placeholder="Lokasi" required>
-          <input id="incident_date" type="date" required>
-          <select id="severity"><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select>
-          <textarea id="description" placeholder="Deskripsi" required></textarea>
-          <button>Simpan Insiden</button>
-        </form>
-      </section>
-
-      <section class="card">
-        <h2>Data Insiden</h2>
-        <div class="table-wrap">
-          <table><thead><tr><th>Judul</th><th>Lokasi</th><th>Tanggal</th><th>Severity</th><th>Status</th></tr></thead>
-          <tbody id="incidentRows"></tbody></table>
-        </div>
-      </section>
-    </section>
+    <section class="dashboard-grid"><div class="dashboard-card dashboard-wide"><div class="card-head"><div><h3>Status Keselamatan</h3><p>Perbandingan item yang masih membutuhkan tindak lanjut</p></div><i class="fa-solid fa-chart-column card-head-icon"></i></div><div class="bar-list" id="dashboard-status-bars"><p class="empty-state">Memuat ringkasan...</p></div></div><div class="dashboard-card"><div class="card-head"><div><h3>Ikhtisar Modul</h3><p>Jumlah data per area aplikasi</p></div><i class="fa-solid fa-layer-group card-head-icon"></i></div><div class="module-list" id="dashboard-module-list"><p class="empty-state">Memuat data...</p></div></div></section>
+    <section class="dashboard-grid dashboard-bottom-grid"><div class="dashboard-card dashboard-wide"><div class="card-head"><div><h3>Prioritas Tindak Lanjut</h3><p>Area yang paling membutuhkan perhatian</p></div><a href="tindakan-korektif.html" class="card-link">Lihat tindakan <i class="fa-solid fa-arrow-right"></i></a></div><div class="attention-list" id="dashboard-attention-list"><p class="empty-state">Memuat prioritas...</p></div></div><div class="dashboard-card"><div class="card-head"><div><h3>Akses Cepat</h3><p>Menu operasional utama</p></div></div><div class="quick-links"><a href="insiden.html"><i class="fa-solid fa-plus"></i> Catat Insiden</a><a href="observasi.html"><i class="fa-solid fa-clipboard-check"></i> Buat Observasi</a><a href="izin-kerja.html"><i class="fa-solid fa-calendar-check"></i> Kelola Izin Kerja</a><a href="pelaporan.html"><i class="fa-solid fa-chart-pie"></i> Buka Pelaporan</a></div></div></section>
   </main>
-  <script src="js/app.js"></script>
+  <script src="dashboard-script.js"></script><script src="dashboard-login.js"></script><script src="topbar-live.js"></script><script src="sidebar-live.js"></script>
 </body>
 </html>

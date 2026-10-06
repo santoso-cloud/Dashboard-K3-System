@@ -55,7 +55,7 @@ app.use("/api/training", auth, require("../routes/training"));
 
 require("../../src/mount-register")(app, pool);
 
-app.get("/", (req, res) => res.sendFile(path.join(frontendPath, "index.html")));
+app.get("/", (req, res) => res.sendFile(path.join(frontendPath, "login.html")));
 app.use("/assets", express.static(path.join(workspaceRoot, "assets")));
 app.use(express.static(frontendPath, { index: false }));
 app.use(express.static(publicPath, { index: false }));

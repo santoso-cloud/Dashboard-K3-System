@@ -4,16 +4,18 @@ const toast=document.getElementById("toast");
 const boolKeys=["notify_incident","notify_overdue","notify_permit","notify_training","email_notification","strong_password","account_lock"];
 
 function notify(msg,error=false){toast.textContent=msg;toast.style.background=error?"#b91c1c":"#065f46";toast.classList.add("show");setTimeout(()=>toast.classList.remove("show"),2600)}
+function authHeaders(json=false){const headers=json?{"Content-Type":"application/json"}:{};const token=localStorage.getItem("token")||localStorage.getItem("authToken");if(token)headers.Authorization=`Bearer ${token}`;return headers}
+function handleUnauthorized(response){if(response.status===401){localStorage.removeItem("token");localStorage.removeItem("authToken");localStorage.removeItem("user");window.location.href="/login.html";return true}return false}
 function setForm(data){Object.entries(data||{}).forEach(([k,v])=>{const x=form.elements[k];if(!x)return;if(x.type==="checkbox")x.checked=v===true||v==="true";else x.value=v??""})}
 function getForm(){const out={};new FormData(form).forEach((v,k)=>out[k]=v);boolKeys.forEach(k=>out[k]=!!form.elements[k]?.checked);["session_timeout","min_password_length","items_per_page"].forEach(k=>{if(out[k]!==undefined)out[k]=Number(out[k])});return out}
 
 async function loadSettings(){
- try{const r=await fetch(API);const j=await r.json();if(!r.ok)throw new Error(j.message);setForm(j.data||j);document.getElementById("save-indicator").textContent="Tersinkron dengan database"}
+ try{const r=await fetch(API,{headers:authHeaders()});if(handleUnauthorized(r))return;const j=await r.json();if(!r.ok)throw new Error(j.message);setForm(j.data||j);document.getElementById("save-indicator").textContent="Tersinkron dengan database"}
  catch(e){notify("Gagal memuat pengaturan: "+e.message,true)}
 }
 form.addEventListener("submit",async e=>{
  e.preventDefault();
- try{const r=await fetch(API,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(getForm())});const j=await r.json();if(!r.ok)throw new Error(j.message);setForm(j.data||{});notify("Pengaturan berhasil disimpan");}
+ try{const r=await fetch(API,{method:"PUT",headers:authHeaders(true),body:JSON.stringify(getForm())});if(handleUnauthorized(r))return;const j=await r.json();if(!r.ok)throw new Error(j.message);setForm(j.data||{});notify("Pengaturan berhasil disimpan");}
  catch(e){notify("Gagal menyimpan: "+e.message,true)}
 });
 document.querySelectorAll(".tab").forEach(btn=>btn.onclick=()=>{
@@ -22,12 +24,12 @@ document.querySelectorAll(".tab").forEach(btn=>btn.onclick=()=>{
 });
 document.getElementById("reset-btn").onclick=async()=>{
  if(!confirm("Reset seluruh pengaturan ke nilai default?"))return;
- try{const r=await fetch(API+"/reset",{method:"POST"});const j=await r.json();if(!r.ok)throw new Error(j.message);setForm(j.data);notify("Pengaturan dikembalikan ke default")}
+ try{const r=await fetch(API+"/reset",{method:"POST",headers:authHeaders()});if(handleUnauthorized(r))return;const j=await r.json();if(!r.ok)throw new Error(j.message);setForm(j.data);notify("Pengaturan dikembalikan ke default")}
  catch(e){notify(e.message,true)}
 };
 document.getElementById("check-db").onclick=async()=>{
  const s=document.getElementById("db-status");s.textContent="Memeriksa...";
- try{const r=await fetch(API+"/health");const j=await r.json();if(!r.ok)throw new Error(j.message);s.textContent=`Terhubung • ${j.database} • ${j.time}`;notify("Database terhubung")}
+ try{const r=await fetch(API+"/health",{headers:authHeaders()});if(handleUnauthorized(r))return;const j=await r.json();if(!r.ok)throw new Error(j.message);s.textContent=`Terhubung • ${j.database} • ${j.time}`;notify("Database terhubung")}
  catch(e){s.textContent="Tidak terhubung";notify(e.message,true)}
 };
 document.getElementById("export-settings").onclick=()=>{

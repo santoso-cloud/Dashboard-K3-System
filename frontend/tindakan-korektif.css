@@ -310,9 +310,12 @@ body{
 
 .layout{
   display:grid;
-  grid-template-columns:1fr 410px;
+  grid-template-columns:minmax(0,1fr) minmax(300px,410px);
   gap:24px;
 }
+
+.left{min-width:0}
+.table-card{min-width:0}
 
 .table-card,
 .side-card{
@@ -649,4 +652,28 @@ th,td{
     gap:15px;
     align-items:flex-start;
   }
+}
+
+/* Toolbar account dan rentang tanggal */
+.top-info .sidebar-logout{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 14px;border:1px solid #fecaca;border-radius:14px;background:#fff;color:#b91c1c;cursor:pointer;font:600 13px 'Segoe UI',sans-serif;transition:.2s ease}
+.top-info .sidebar-logout i{font-size:14px}
+.top-info .sidebar-logout:hover{border-color:#ef4444;background:#fef2f2;color:#991b1b;transform:translateY(-1px)}
+.top-info .sidebar-logout:focus-visible{outline:3px solid rgba(239,68,68,.16);outline-offset:1px}
+.filter .date-range{display:flex;align-items:center;gap:8px;min-width:0;height:44px;padding:0 11px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;color:#94a3b8}
+.filter .date-range:focus-within{border-color:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,.12)}
+.filter .date-range input{min-width:0;width:calc(50% - 4px);height:100%;padding:0;border:0;outline:0;background:transparent;color:#334155;font:13px 'Segoe UI',sans-serif}
+.filter .date-range input::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.65}
+.filter .date-range span{font-size:14px;color:#94a3b8}
+
+/* Enam elemen filter: pencarian, 3 select, tanggal, dan reset. */
+@media(min-width:1451px){
+  .filter{grid-template-columns:minmax(260px,2fr) repeat(3,minmax(145px,1fr)) minmax(245px,1.55fr) minmax(105px,.7fr);align-items:stretch}
+  .filter .date-range{width:100%}
+}
+
+@media(min-width:1201px) and (max-width:1450px){
+  .main{padding:24px}
+  .top-info > div:not(.bell),.top-info .profile{display:none}
+  .filter{grid-template-columns:2fr repeat(3,1fr)}
+  .filter .date-range{grid-column:span 2}
 }
