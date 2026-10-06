@@ -43,14 +43,30 @@
                 sans-serif;
 
             background:
-                linear-gradient(
-                    135deg,
-                    #061b35 0%,
-                    #003b38 100%
-                );
+                radial-gradient(circle at 12% 12%, rgba(32, 201, 151, .22), transparent 30%),
+                radial-gradient(circle at 90% 88%, rgba(56, 189, 248, .18), transparent 32%),
+                linear-gradient(135deg, #061b35 0%, #003b38 100%);
 
             padding: 20px;
+
+            position: relative;
+
+            overflow: hidden;
         }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            width: 280px;
+            height: 280px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        body::before { top: -150px; right: -90px; }
+        body::after { bottom: -175px; left: -100px; }
 
 
         .login-container {
@@ -70,8 +86,31 @@
             padding: 40px;
 
             box-shadow:
-                0 25px 70px
-                rgba(0, 0, 0, 0.30);
+                0 25px 70px rgba(0, 0, 0, 0.30),
+                0 0 0 1px rgba(255, 255, 255, .65);
+
+            position: relative;
+        }
+
+        .eyebrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            margin-bottom: 14px;
+            color: #008568;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+
+        .eyebrow::before {
+            content: "";
+            width: 22px;
+            height: 2px;
+            border-radius: 99px;
+            background: #00a878;
         }
 
 
@@ -125,7 +164,7 @@
 
             line-height: 1.6;
 
-            margin-bottom: 30px;
+            margin-bottom: 28px;
         }
 
 
@@ -154,6 +193,13 @@
             display: block;
         }
 
+        .message::before {
+            content: "\\f071";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            margin-right: 8px;
+        }
+
 
         .form-group {
 
@@ -170,6 +216,8 @@
             font-size: 14px;
 
             font-weight: 600;
+
+            letter-spacing: .01em;
 
             margin-bottom: 8px;
         }
@@ -219,7 +267,13 @@
             font-size: 15px;
 
             transition: 0.2s;
+
+            background: #f8fafc;
         }
+
+        input::placeholder { color: #94a3b8; }
+
+        input:hover { border-color: #b8c7d8; }
 
 
         input:focus {
@@ -298,6 +352,18 @@
             transform: none;
         }
 
+        .security-note {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            margin-top: 18px;
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .security-note i { color: #00a878; }
+
 
         .footer {
 
@@ -350,6 +416,8 @@
         <h1>
             K3 Safety System
         </h1>
+
+        <div class="eyebrow">Portal keselamatan kerja</div>
 
 
         <p class="subtitle">
@@ -448,6 +516,11 @@
 
 
         </form>
+
+        <div class="security-note">
+            <i class="fa-solid fa-shield-halved"></i>
+            Akses aman untuk pengguna terdaftar
+        </div>
 
 
         <div class="footer">

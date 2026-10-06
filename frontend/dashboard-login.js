@@ -128,6 +128,7 @@ function initializeDashboardLogin() {
       showProfileName(elements);
       elements.loginForm.reset();
       closeLoginPopup(elements);
+      window.location.href = "apd.html";
     } catch (error) {
       elements.loginMessage.textContent = error.message || "Tidak dapat terhubung ke server.";
     } finally {

@@ -19,7 +19,7 @@ $("loginForm").addEventListener("submit", async e => {
     });
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
-    showApp();
+    window.location.href = "apd.html";
   } catch(err) { $("loginMessage").textContent = err.message; }
 });
 
