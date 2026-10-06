@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>K3 Safety - Tindakan Korektif</title>
   <link rel="stylesheet" href="tindakan-korektif.css">
+  <link rel="stylesheet" href="sidebar-layout-fixes.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="icon" href="data:,">
   <style>
@@ -23,7 +24,7 @@
   <div class="brand"><div class="brand-icon"><i class="fa-solid fa-shield-halved"></i></div><div><h2>K3 SAFETY</h2><p>Safety First, Always</p></div></div>
   <nav class="nav-menu">
     <a href="index.html"><i class="fa-solid fa-chart-line"></i><span>Dashboard</span></a>
-    <a href="insiden.html"><i class="fa-solid fa-helmet-safety"></i><span>Insiden</span><small>12</small></a>
+    <a href="insiden.html"><i class="fa-solid fa-helmet-safety"></i><span>Insiden</span><small>0</small></a>
     <a href="observasi.html"><i class="fa-solid fa-clipboard-check"></i><span>Observasi & Inspeksi</span></a>
     <a href="izin-kerja.html"><i class="fa-solid fa-calendar-check"></i><span>Izin Kerja</span></a>
     <a href="training.html"><i class="fa-solid fa-graduation-cap"></i><span>Training K3</span></a>
@@ -69,5 +70,6 @@
 <div id="action-modal" class="action-modal" hidden><form id="action-form" class="action-form"><div class="action-form-head"><h2 id="action-modal-title">Buat Tindakan Korektif</h2><button id="close-action-modal" type="button">&times;</button></div><input type="hidden" name="id"><label>Sumber<select name="source" required><option value="">Pilih sumber</option><option>Observasi</option><option>Insiden</option><option>Audit</option><option>Inspeksi</option><option>Lainnya</option></select></label><label>Prioritas<select name="priority" required><option value="High">High</option><option value="Medium">Medium</option><option value="Low">Low</option></select></label><label class="action-description">Deskripsi Masalah<textarea name="description" rows="4" required maxlength="1000"></textarea></label><label>Penanggung Jawab<input name="assignee" required maxlength="120"></label><label>Tenggat<input name="due_date" type="date" required></label><label>Status<select name="status" required><option value="Open">Terbuka</option><option value="In Progress">Dalam Proses</option><option value="Closed">Selesai</option></select></label><p id="action-form-error" role="alert"></p><div class="action-form-actions"><button id="cancel-action-modal" type="button">Batal</button><button type="submit">Simpan</button></div></form></div>
 <script src="action-script.js"></script>
 <script src="dashboard-login.js"></script>
+<script src="sidebar-live.js"></script>
 </body>
 </html>

@@ -1,0 +1,54 @@
+/* Shared overflow protection for all sidebar pages. */
+html,body{max-width:100%;overflow-x:hidden}
+.main{min-width:0;max-width:100%}
+.layout,.left,.right,.table-card,.matrix-card,.side-card,.settings-layout,.settings-content{min-width:0}
+.layout{grid-template-columns:minmax(0,1fr) minmax(280px,410px)}
+.filter{min-width:0}
+.filter>*{min-width:0;max-width:100%}
+.filter input,.filter select,.filter button{max-width:100%}
+.table-card,.matrix-card{max-width:100%;overflow-x:auto}
+table{max-width:100%}
+.topbar,.page-title,.top-info{min-width:0;max-width:100%}
+.top-info{flex-wrap:wrap}
+
+@media(max-width:1200px){
+  .main{padding-left:24px;padding-right:24px}
+  .layout{grid-template-columns:1fr}
+  .right{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+}
+
+@media(max-width:900px){
+  .sidebar{width:230px}
+  .main{margin-left:230px;width:calc(100% - 230px)}
+  .top-info>div:not(.bell),.top-info>.profile{display:none}
+  .top-info>.sidebar-logout{display:inline-flex}
+}
+
+@media(max-width:768px){
+  body{display:block}
+  .sidebar{position:relative;top:auto;left:auto;width:100%;height:auto;max-height:none;overflow:visible}
+  .main{margin-left:0;width:100%;padding:20px 16px}
+  .nav-menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  .safety-card{display:none}
+  .topbar,.page-title{flex-direction:column;align-items:flex-start;gap:14px}
+  .top-info{width:100%;display:flex}
+  .top-info>.sidebar-logout{display:inline-flex}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .right{grid-template-columns:1fr}
+  .settings-layout{grid-template-columns:1fr}
+  .settings-nav{display:flex;overflow-x:auto}
+  .settings-nav .tab{min-width:170px}
+  .filter{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .filter .search{grid-column:1 / -1}
+}
+
+@media(max-width:520px){
+  .main{padding:16px 12px}
+  .nav-menu{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr}
+  .filter{grid-template-columns:1fr}
+  .filter .search{grid-column:auto}
+  .title-actions{width:100%;flex-direction:column}
+  .title-actions button{width:100%}
+  .right{display:grid;grid-template-columns:1fr}
+}

@@ -97,7 +97,7 @@ body{background:#f8fafc;color:#0f172a;display:flex}
 .yellow-bg{background:#fef9c3;color:#eab308}
 
 .filter{
-  display:grid;grid-template-columns:2fr repeat(6,1fr);
+  display:grid;grid-template-columns:minmax(240px,2fr) repeat(4,minmax(140px,1fr)) minmax(190px,1.3fr) minmax(100px,.7fr);
   gap:12px;margin-bottom:18px;
 }
 .filter button,.search{
@@ -107,6 +107,9 @@ body{background:#f8fafc;color:#0f172a;display:flex}
 }
 .search{justify-content:flex-start;gap:10px}
 .search input{width:100%;border:0;outline:0;background:transparent;font:inherit;}
+.filter button{cursor:pointer;white-space:nowrap;transition:.2s ease}
+.filter button:hover{border-color:#10b981;color:#047857;background:#f0fdf4}
+.filter button:focus-visible{outline:3px solid rgba(16,185,129,.14);outline-offset:1px}
 .action button{border:0;background:transparent;color:#dc2626;cursor:pointer;font-weight:700;}
 .risk-modal[hidden]{display:none;}
 .risk-modal{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:20px;background:rgba(15,23,42,.5);}
@@ -218,6 +221,12 @@ th,td{
 .risk-row strong{font-size:15px}
 .side-card a{display:block;margin-top:16px;color:#2563eb;font-weight:700;text-decoration:none}
 
+.layout{grid-template-columns:minmax(0,1fr) minmax(300px,410px)}
+.left{min-width:0}
+.matrix-card,.table-card{min-width:0}
+.top-info .sidebar-logout{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 14px;border:1px solid #fecaca;border-radius:14px;background:#fff;color:#b91c1c;cursor:pointer;font:600 13px 'Segoe UI',sans-serif;transition:.2s ease}
+.top-info .sidebar-logout:hover{border-color:#ef4444;background:#fef2f2;color:#991b1b;transform:translateY(-1px)}
+
 .bar-row{
   display:grid;grid-template-columns:145px 1fr 35px;
   gap:10px;align-items:center;margin:14px 0;font-size:13px;
@@ -233,7 +242,8 @@ th,td{
   .stats{grid-template-columns:repeat(2,1fr)}
   .layout{grid-template-columns:1fr}
   .right{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
-  .filter{grid-template-columns:1fr 1fr}
+  .filter{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .filter .search{grid-column:1 / -1}
   .matrix-wrap{grid-template-columns:1fr}
 }
 
@@ -245,4 +255,40 @@ th,td{
   .top-info{flex-wrap:wrap}
   .stats,.right,.filter{grid-template-columns:1fr}
   .pagination{flex-direction:column;gap:15px;align-items:flex-start}
+}
+
+@media(max-width:560px){
+  .main{padding:18px 14px}
+  .stats{grid-template-columns:1fr}
+  .filter{grid-template-columns:1fr}
+  .filter .search{grid-column:auto}
+  .title-actions{width:100%;flex-direction:column}
+  .title-actions button{width:100%}
+  .matrix-wrap{padding:0 12px 14px}
+  .risk-matrix{grid-template-columns:105px repeat(5,minmax(70px,1fr));min-width:455px}
+  .matrix-wrap{overflow-x:auto}
+  .right{display:grid;grid-template-columns:1fr}
+}
+
+/* Menjaga Risk Matrix tetap proporsional tanpa mengubah tampilan tabel. */
+.matrix-card{overflow:hidden}
+.matrix-wrap{grid-template-columns:minmax(620px,1fr) 230px;min-width:0;overflow-x:auto;align-items:start}
+.risk-matrix{min-width:620px}
+
+/* Filter memakai baris fleksibel agar kontrol tidak terjepit/gepeng. */
+.filter{display:flex;flex-wrap:wrap;align-items:stretch;gap:12px}
+.filter .search{flex:2 1 280px;min-width:240px}
+.filter>button{flex:1 1 145px;min-width:135px}
+.filter>button:nth-last-child(2){flex:1.35 1 190px}
+.filter>button:last-child{flex:.7 1 105px}
+
+@media(max-width:1200px){
+  .matrix-wrap{grid-template-columns:minmax(620px,1fr) 230px}
+  .filter .search{flex-basis:100%}
+}
+
+@media(max-width:768px){
+  .matrix-wrap{grid-template-columns:minmax(620px,1fr);padding:0 14px 16px}
+  .matrix-info{min-width:0}
+  .filter>*{flex:1 1 100%!important;min-width:0}
 }

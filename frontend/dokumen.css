@@ -534,3 +534,33 @@ td small{
 .document-chart-row>div b{display:block;height:100%;border-radius:8px}
 .side-card #document-status-legend p{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px}
 .side-card #document-status-legend p span{display:flex;align-items:center;min-width:0}
+
+/* Menjaga filter dan container dokumen tetap membungkus ke bawah. */
+.content-layout{grid-template-columns:minmax(0,1fr) minmax(280px,310px);min-width:0}
+.left-content,.right-content,.table-card{min-width:0}
+.filters{display:flex;flex-wrap:wrap;align-items:stretch;gap:12px}
+.filters .search{flex:2 1 260px;min-width:230px}
+.filters select,.filters button{flex:1 1 150px;min-width:140px;max-width:100%}
+.filters button{cursor:pointer;justify-content:center;transition:.2s ease}
+.filters button:hover{border-color:#10b981;color:#047857;background:#f0fdf4}
+.table-card{max-width:100%;overflow-x:auto}
+.table-card table{min-width:900px}
+.right-content{display:grid;align-content:start;gap:0}
+
+@media(max-width:1200px){
+  .content-layout{grid-template-columns:1fr}
+  .right-content{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+  .filters .search{flex-basis:100%}
+}
+
+@media(max-width:768px){
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .right-content{grid-template-columns:1fr}
+  .filters>*{flex:1 1 100%;min-width:0}
+  .pagination{flex-wrap:wrap;gap:10px}
+}
+
+@media(max-width:520px){
+  .stats{grid-template-columns:1fr}
+  .main{padding:16px 12px}
+}

@@ -1,4 +1,4 @@
-const SIDEBAR_DASHBOARD_API = "http://localhost:5000/api/dashboard";
+const SIDEBAR_API = "http://localhost:5000/api";
 
 function setSidebarBadge(selector, value, label) {
   document.querySelectorAll(selector).forEach((badge) => {
@@ -17,15 +17,20 @@ async function updateSidebarNotifications() {
   }
 
   try {
-    const response = await fetch(SIDEBAR_DASHBOARD_API, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    if (!response.ok) throw new Error("Sidebar notification request failed");
+    const headers = { Authorization: `Bearer ${token}` };
+    const [incidentResponse, actionResponse] = await Promise.all([
+      fetch(`${SIDEBAR_API}/insiden`, { headers }),
+      fetch(`${SIDEBAR_API}/tindakan/summary`, { headers })
+    ]);
+    if (!incidentResponse.ok || !actionResponse.ok) throw new Error("Sidebar notification request failed");
 
-    const payload = await response.json();
-    const data = payload.data || {};
-    const openIncidents = Number(data.incidents?.open || 0);
-    const openActions = Number(data.corrective_actions?.total || 0);
+    const incidentsPayload = await incidentResponse.json();
+    const actionPayload = await actionResponse.json();
+    const incidents = Array.isArray(incidentsPayload.data) ? incidentsPayload.data : [];
+    const actionStats = actionPayload.data || {};
+    const openStatuses = ["open", "opened", "terbuka", "progress", "in progress", "dalam proses"];
+    const openIncidents = incidents.filter((item) => openStatuses.includes(String(item.status || "").toLowerCase().trim())).length;
+    const openActions = Number(actionStats.open || 0) + Number(actionStats.progress || 0);
 
     setSidebarBadge('.nav-menu a[href$="insiden.html"] small', openIncidents, "insiden terbuka");
     setSidebarBadge('.nav-menu a[href$="tindakan-korektif.html"] small, .nav-menu a[href$="tindakan.html"] small', openActions, "tindakan korektif terbuka");
