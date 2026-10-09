@@ -5,6 +5,9 @@ const incidentModal = document.getElementById("incident-modal");
 const incidentForm = document.getElementById("incident-form");
 const incidentError = document.getElementById("incident-form-error");
 let incidents = [];
+const incidentFilters = { status: "", category: "", location: "", dateFrom: "", dateTo: "" };
+const incidentDateFrom = document.getElementById("incident-date-from");
+const incidentDateTo = document.getElementById("incident-date-to");
 const incidentChartColors = ["#2563eb", "#ef4444", "#f59e0b", "#10b981", "#8b5cf6", "#06b6d4", "#f97316"];
 
 function incidentToken() {
@@ -182,8 +185,41 @@ async function incidentRequest(path = "", options = {}) {
 
 function filterIncidents(search = "") {
   const query = search.toLocaleLowerCase("id-ID");
-  return incidents.filter(item => [item.title, item.category, item.location, item.status, item.reporter]
-    .some(value => String(value || "").toLocaleLowerCase("id-ID").includes(query)));
+  return incidents.filter(item => {
+    const rawDate = incidentDate(item);
+    const itemDate = rawDate ? String(rawDate).slice(0, 10) : "";
+    return [item.title, item.category, item.location, item.status, item.reporter]
+    .some(value => String(value || "").toLocaleLowerCase("id-ID").includes(query))
+    && (!incidentFilters.status || String(item.status || "") === incidentFilters.status)
+    && (!incidentFilters.category || String(item.category || "") === incidentFilters.category)
+    && (!incidentFilters.location || String(item.location || "") === incidentFilters.location)
+    && (!incidentFilters.dateFrom || (itemDate && itemDate >= incidentFilters.dateFrom))
+    && (!incidentFilters.dateTo || (itemDate && itemDate <= incidentFilters.dateTo));
+  });
+}
+
+function wireIncidentFilters() {
+  const buttons = [...document.querySelectorAll(".filter > button")];
+  const definitions = [
+    ["status", "Semua Status", [...new Set(incidents.map(item => item.status).filter(Boolean))]],
+    ["category", "Semua Kategori", [...new Set(incidents.map(item => item.category).filter(Boolean))]],
+    ["location", "Semua Lokasi", [...new Set(incidents.map(item => item.location).filter(Boolean))]]
+  ];
+  definitions.forEach(([key, label, values], index) => {
+    const button = buttons[index];
+    if (!button || button.dataset.filterReady) return;
+    const select = document.createElement("select");
+    select.className = "incident-filter-select";
+    select.innerHTML = `<option value="">${label}</option>` + values.sort((a, b) => String(a).localeCompare(String(b), "id")).map(value => `<option value="${escapeIncident(value)}">${escapeIncident(value)}</option>`).join("");
+    select.value = incidentFilters[key];
+    select.addEventListener("change", event => { incidentFilters[key] = event.target.value; renderIncidents(filterIncidents(incidentSearch.value.trim())); });
+    button.replaceWith(select);
+  });
+  const reset = document.getElementById("reset-incident-filter");
+  if (reset && !reset.dataset.filterReady) {
+    reset.dataset.filterReady = "true";
+    reset.addEventListener("click", () => { incidentSearch.value = ""; Object.keys(incidentFilters).forEach(key => { incidentFilters[key] = ""; }); incidentDateFrom.value = ""; incidentDateTo.value = ""; document.querySelectorAll(".incident-filter-select").forEach(select => { select.value = ""; }); renderIncidents(filterIncidents()); });
+  }
 }
 
 async function loadIncidents() {
@@ -191,6 +227,7 @@ async function loadIncidents() {
   try {
     const payload = await incidentRequest();
     incidents = Array.isArray(payload.data) ? payload.data : [];
+    wireIncidentFilters();
     updateIncidentStats(incidents);
     renderIncidentCharts(incidents);
     renderIncidents(filterIncidents(incidentSearch.value.trim()));
@@ -249,6 +286,8 @@ document.getElementById("close-incident-modal").addEventListener("click", closeI
 document.getElementById("cancel-incident-modal").addEventListener("click", closeIncidentModal);
 incidentForm.addEventListener("submit", saveIncident);
 incidentSearch.addEventListener("input", event => renderIncidents(filterIncidents(event.target.value.trim())));
+incidentDateFrom.addEventListener("change", event => { incidentFilters.dateFrom = event.target.value; renderIncidents(filterIncidents(incidentSearch.value.trim())); });
+incidentDateTo.addEventListener("change", event => { incidentFilters.dateTo = event.target.value; renderIncidents(filterIncidents(incidentSearch.value.trim())); });
 incidentBody.addEventListener("click", event => {
   const button = event.target.closest("[data-delete-incident]");
   if (button) deleteIncident(Number(button.dataset.deleteIncident));

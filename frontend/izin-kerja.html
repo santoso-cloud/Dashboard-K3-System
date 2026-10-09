@@ -121,7 +121,12 @@
     <button>Semua Status <i class="fa-solid fa-chevron-down"></i></button>
     <button>Semua Jenis Pekerjaan <i class="fa-solid fa-chevron-down"></i></button>
     <button>Semua Lokasi <i class="fa-solid fa-chevron-down"></i></button>
-    <button>01/05/2024 - 15/05/2024 <i class="fa-regular fa-calendar"></i></button>
+    <div class="permit-date-filter" aria-label="Filter tanggal izin kerja">
+      <i class="fa-regular fa-calendar"></i>
+      <input id="permit-date-from" type="date" aria-label="Tanggal mulai">
+      <span>-</span>
+      <input id="permit-date-to" type="date" aria-label="Tanggal selesai">
+    </div>
     <button><i class="fa-solid fa-rotate-right"></i> Reset</button>
   </section>
 
@@ -237,7 +242,7 @@
   </div>
 
   <script src="attachments.js?v=10"></script>
-  <script src="permit-script.js"></script>
+  <script src="permit-script.js?v=3"></script>
   <script src="dashboard-login.js"></script>
   <script src="crud-edit.js?v=5"></script>
   <script src="topbar-live.js"></script>

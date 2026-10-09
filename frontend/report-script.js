@@ -203,6 +203,8 @@
 
   function wireFilters() {
     const search=$('report-search');
+    const dateFrom=$('report-date-from');
+    const dateTo=$('report-date-to');
     if (search) {
       let timer;
       search.addEventListener('input', () => { clearTimeout(timer); timer=setTimeout(()=>{state.search=search.value.trim();state.page=1;load();},300); });
@@ -220,8 +222,10 @@
       }
       sel.addEventListener('change',()=>{state[d[0]]=sel.value;state.page=1;load();});
     });
-    const reset=buttons[4];
-    if(reset) reset.addEventListener('click',()=>{ state.page=1;state.search='';state.type='';state.location='';state.status=''; if(search)search.value=''; document.querySelectorAll('.report-filter-select').forEach(s=>s.value=''); load(); });
+    if (dateFrom) dateFrom.addEventListener('change',()=>{ state.from=dateFrom.value; state.page=1; load(); });
+    if (dateTo) dateTo.addEventListener('change',()=>{ state.to=dateTo.value; state.page=1; load(); });
+    const reset=document.querySelector('.filter button:last-child');
+    if(reset) reset.addEventListener('click',()=>{ state.page=1;state.search='';state.type='';state.location='';state.status='';state.from='';state.to=''; if(search)search.value=''; if(dateFrom)dateFrom.value=''; if(dateTo)dateTo.value=''; document.querySelectorAll('.report-filter-select').forEach(s=>s.value=''); load(); });
   }
 
   document.addEventListener('DOMContentLoaded', () => {

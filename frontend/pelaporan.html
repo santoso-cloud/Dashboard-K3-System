@@ -125,7 +125,12 @@
     <button>Semua Jenis Laporan <i class="fa-solid fa-chevron-down"></i></button>
     <button>Semua Lokasi <i class="fa-solid fa-chevron-down"></i></button>
     <button>Semua Status <i class="fa-solid fa-chevron-down"></i></button>
-    <button>01/05/2024 - 15/05/2024 <i class="fa-regular fa-calendar"></i></button>
+    <div class="date-filter" aria-label="Filter tanggal laporan">
+      <i class="fa-regular fa-calendar"></i>
+      <input id="report-date-from" type="date" aria-label="Tanggal mulai">
+      <span>-</span>
+      <input id="report-date-to" type="date" aria-label="Tanggal selesai">
+    </div>
     <button><i class="fa-solid fa-rotate-right"></i> Reset</button>
   </section>
 
@@ -339,7 +344,7 @@
   </div>
 
   <script src="attachments.js?v=10"></script>
-  <script src="report-script.js"></script>
+  <script src="report-script.js?v=2"></script>
   <script src="dashboard-login.js"></script>
   <script src="crud-edit.js?v=5"></script>
   <script src="topbar-live.js"></script>

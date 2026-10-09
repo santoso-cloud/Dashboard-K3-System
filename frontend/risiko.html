@@ -126,7 +126,12 @@
     <button>Semua Lokasi <i class="fa-solid fa-chevron-down"></i></button>
     <button>Semua Status <i class="fa-solid fa-chevron-down"></i></button>
     <button>Semua Pemilik Risiko <i class="fa-solid fa-chevron-down"></i></button>
-    <button>01/05/2024 - 15/05/2024 <i class="fa-regular fa-calendar"></i></button>
+    <div class="risk-date-filter" aria-label="Filter tanggal risiko">
+      <i class="fa-regular fa-calendar"></i>
+      <input id="risk-date-from" type="date" aria-label="Tanggal mulai">
+      <span>-</span>
+      <input id="risk-date-to" type="date" aria-label="Tanggal selesai">
+    </div>
     <button><i class="fa-solid fa-rotate-right"></i> Reset</button>
   </section>
 
@@ -277,7 +282,7 @@
   </div>
 
 <script src="attachments.js?v=10"></script>
-  <script src="risk-script.js"></script>
+  <script src="risk-script.js?v=2"></script>
   <script src="dashboard-login.js"></script>
 <script src="crud-edit.js?v=5"></script>
   <script src="topbar-live.js"></script>

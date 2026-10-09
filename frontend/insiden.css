@@ -619,6 +619,7 @@ body{
 
 
 .filter button,
+.filter select,
 .search{
   min-width:0;
   height:43px;
@@ -1680,3 +1681,7 @@ body{
   }
 
 }
+
+.filter select{cursor:pointer;outline:0;}
+.incident-date-filter{min-width:0;height:43px;display:flex;align-items:center;gap:5px;padding:0 9px;background:#fff;border:1px solid #dbe3ec;border-radius:9px;color:#64748b;font-size:12px;overflow:hidden;}
+.incident-date-filter input{min-width:0;width:100%;border:0;outline:0;color:#334155;font:inherit;}

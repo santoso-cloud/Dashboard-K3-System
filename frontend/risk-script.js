@@ -5,6 +5,9 @@ const riskModal = document.getElementById("risk-modal");
 const riskForm = document.getElementById("risk-form");
 const riskError = document.getElementById("risk-form-error");
 let risks = [];
+const riskFilters = { category: "", location: "", status: "", owner: "", dateFrom: "", dateTo: "" };
+const riskDateFrom = document.getElementById("risk-date-from");
+const riskDateTo = document.getElementById("risk-date-to");
 
 function riskToken() { return localStorage.getItem("token") || localStorage.getItem("authToken"); }
 function escapeRisk(value) { return String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;"); }
@@ -42,16 +45,50 @@ async function riskRequest(path = "", options = {}) {
   if (!response.ok) throw new Error(payload.message || `Request gagal (${response.status})`);
   return payload;
 }
-async function loadRisks(search = "") { riskBody.innerHTML = '<tr><td colspan="11">Memuat data risiko...</td></tr>'; try { const payload = await riskRequest(search ? `?search=${encodeURIComponent(search)}` : ""); risks = payload.data || []; updateRiskStats(risks); renderRisks(risks); } catch (error) { riskBody.innerHTML = `<tr><td colspan="11">${escapeRisk(error.message)}</td></tr>`; } }
+function filteredRisks() {
+  const search = riskSearch.value.trim().toLowerCase();
+  return risks.filter(item => {
+    const rawDate = riskValue(item, "risk_date", "assessment_date", "identified_at", "date", "created_at");
+    const itemDate = rawDate === "-" ? "" : String(rawDate).slice(0, 10);
+    const text = [item.risk_code, item.code, item.description, item.title, item.name, item.category, item.location, item.area, item.status, item.owner, item.risk_owner, item.responsible_person].join(" ").toLowerCase();
+    return (!search || text.includes(search))
+      && (!riskFilters.category || riskValue(item, "category") === riskFilters.category)
+      && (!riskFilters.location || riskValue(item, "location", "area") === riskFilters.location)
+      && (!riskFilters.status || riskValue(item, "status") === riskFilters.status)
+      && (!riskFilters.owner || riskValue(item, "owner", "risk_owner", "responsible_person") === riskFilters.owner)
+      && (!riskFilters.dateFrom || (itemDate && itemDate >= riskFilters.dateFrom))
+      && (!riskFilters.dateTo || (itemDate && itemDate <= riskFilters.dateTo));
+  });
+}
+function refreshRiskTable() { const filtered = filteredRisks(); updateRiskStats(filtered); renderRisks(filtered); }
+function riskOptions(items, ...keys) {
+  return [...new Set(items.map(item => riskValue(item, ...keys)).filter(value => value !== "-"))].sort((a, b) => String(a).localeCompare(String(b), "id"));
+}
+function wireRiskFilters() {
+  const controls = [...document.querySelectorAll(".filter > button")];
+  const definitions = [["category", "Semua Kategori", ["category"]], ["location", "Semua Lokasi", ["location", "area"]], ["status", "Semua Status", ["status"]], ["owner", "Semua Pemilik Risiko", ["owner", "risk_owner", "responsible_person"]]];
+  definitions.forEach(([key, label, fields], index) => {
+    const button = controls[index]; if (!button) return;
+    const select = document.createElement("select"); select.className = "risk-filter-select"; select.setAttribute("aria-label", label);
+    select.innerHTML = `<option value="">${label}</option>` + riskOptions(risks, ...fields).map(value => `<option value="${escapeRisk(value)}">${escapeRisk(value)}</option>`).join("");
+    select.addEventListener("change", event => { riskFilters[key] = event.target.value; refreshRiskTable(); });
+    button.replaceWith(select);
+  });
+  const reset = controls[4];
+  if (reset && !reset.dataset.ready) { reset.dataset.ready = "1"; reset.addEventListener("click", () => { Object.keys(riskFilters).forEach(key => { riskFilters[key] = ""; }); riskSearch.value = ""; riskDateFrom.value = ""; riskDateTo.value = ""; document.querySelectorAll(".risk-filter-select").forEach(select => { select.value = ""; }); refreshRiskTable(); }); }
+}
+async function loadRisks() { riskBody.innerHTML = '<tr><td colspan="11">Memuat data risiko...</td></tr>'; try { const payload = await riskRequest(""); risks = payload.data || []; wireRiskFilters(); refreshRiskTable(); } catch (error) { riskBody.innerHTML = `<tr><td colspan="11">${escapeRisk(error.message)}</td></tr>`; } }
 function openRiskModal() { riskForm.reset(); riskError.textContent = ""; riskModal.hidden = false; riskForm.elements.description.focus(); }
 function closeRiskModal() { riskModal.hidden = true; riskError.textContent = ""; }
-async function saveRisk(event) { event.preventDefault(); riskError.textContent = ""; const data = Object.fromEntries(new FormData(riskForm).entries()); data.likelihood = Number(data.likelihood); data.impact = Number(data.impact); data.risk_score = data.likelihood * data.impact; data.risk_level = riskLevel(data.risk_score); const button = riskForm.querySelector("button[type='submit']"); button.disabled = true; try { await riskRequest("", { method: "POST", body: JSON.stringify(data) }); closeRiskModal(); await loadRisks(riskSearch.value.trim()); } catch (error) { riskError.textContent = error.message; } finally { button.disabled = false; } }
-async function deleteRisk(id) { if (!Number.isFinite(id) || !window.confirm("Hapus risiko ini?")) return; try { await riskRequest(`/${id}`, { method: "DELETE" }); await loadRisks(riskSearch.value.trim()); } catch (error) { window.alert(error.message); } }
+async function saveRisk(event) { event.preventDefault(); riskError.textContent = ""; const data = Object.fromEntries(new FormData(riskForm).entries()); data.likelihood = Number(data.likelihood); data.impact = Number(data.impact); data.risk_score = data.likelihood * data.impact; data.risk_level = riskLevel(data.risk_score); const button = riskForm.querySelector("button[type='submit']"); button.disabled = true; try { await riskRequest("", { method: "POST", body: JSON.stringify(data) }); closeRiskModal(); await loadRisks(); } catch (error) { riskError.textContent = error.message; } finally { button.disabled = false; } }
+async function deleteRisk(id) { if (!Number.isFinite(id) || !window.confirm("Hapus risiko ini?")) return; try { await riskRequest(`/${id}`, { method: "DELETE" }); await loadRisks(); } catch (error) { window.alert(error.message); } }
 
 document.getElementById("add-risk-button").addEventListener("click", openRiskModal);
 document.getElementById("close-risk-modal").addEventListener("click", closeRiskModal);
 document.getElementById("cancel-risk-modal").addEventListener("click", closeRiskModal);
 riskForm.addEventListener("submit", saveRisk);
-riskSearch.addEventListener("input", event => loadRisks(event.target.value.trim()));
+riskSearch.addEventListener("input", refreshRiskTable);
+riskDateFrom.addEventListener("change", event => { riskFilters.dateFrom = event.target.value; refreshRiskTable(); });
+riskDateTo.addEventListener("change", event => { riskFilters.dateTo = event.target.value; refreshRiskTable(); });
 riskBody.addEventListener("click", event => { const button = event.target.closest("[data-delete-risk]"); if (button) deleteRisk(Number(button.dataset.deleteRisk)); });
 loadRisks();

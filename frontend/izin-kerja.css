@@ -265,6 +265,7 @@ body{
 }
 
 .filter button,
+.filter select,
 .search{
   height:44px;
   border:1px solid #e2e8f0;
@@ -596,3 +597,6 @@ th,td{
     align-items:flex-start;
   }
 }
+.filter select{cursor:pointer;outline:0;}
+.permit-date-filter{min-width:0;height:44px;border:1px solid #e2e8f0;background:white;border-radius:8px;padding:0 10px;display:flex;align-items:center;gap:6px;color:#64748b;font-size:13px;overflow:hidden;}
+.permit-date-filter input{min-width:0;width:100%;border:0;outline:0;color:#334155;font:inherit;}

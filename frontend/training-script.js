@@ -86,7 +86,7 @@ function renderStats(items) {
 function renderCategoryChart(items) {
   const groups = new Map();
   items.forEach(item => {
-    const label = item.category || "Tanpa kategori";
+    const label = normalizeTrainingStatus(item.status);
     groups.set(label, (groups.get(label) || 0) + 1);
   });
   const entries = [...groups.entries()].sort((first, second) => second[1] - first[1]);
@@ -101,10 +101,10 @@ function renderCategoryChart(items) {
   document.getElementById("training-category-total").innerHTML = `${items.length}<small>Total</small>`;
   document.getElementById("training-category-legend").innerHTML = entries.length
     ? entries.map(([label, count], index) => `<p>
-        <span><b class="chart-dot" style="background:${chartColors[index % chartColors.length]}"></b>${escapeTraining(label)}</span>
+        <span><b class="chart-dot" style="background:${chartColors[index % chartColors.length]}"></b>${escapeTraining(trainingStatusLabel(label))}</span>
         <strong>${count} (${Math.round((count / items.length) * 100)}%)</strong>
       </p>`).join("")
-    : '<p class="chart-empty">Belum ada data kategori.</p>';
+    : '<p class="chart-empty">Belum ada data status.</p>';
 }
 
 function renderStatusChart(items) {
@@ -183,7 +183,6 @@ function renderTrainings() {
 function renderAll() {
   renderStats(state.trainings);
   renderCategoryChart(state.trainings);
-  renderStatusChart(state.trainings);
   renderUpcoming(state.trainings);
   renderFilters(state.trainings);
   renderTrainings();
@@ -220,7 +219,6 @@ async function loadTrainings() {
       .forEach(id => { document.getElementById(id).textContent = "—"; });
     document.getElementById("training-category-total").innerHTML = "—<small>Total</small>";
     document.getElementById("training-category-legend").innerHTML = `<p class="chart-empty">${escapeTraining(message)}</p>`;
-    document.getElementById("training-status-chart").innerHTML = `<p class="chart-empty">${escapeTraining(message)}</p>`;
     document.getElementById("training-upcoming-list").innerHTML = `<p class="chart-empty">${escapeTraining(message)}</p>`;
   }
 }

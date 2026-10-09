@@ -5,6 +5,9 @@ const permitModal = document.getElementById("permit-modal");
 const permitForm = document.getElementById("permit-form");
 const permitError = document.getElementById("permit-form-error");
 let permits = [];
+const permitFilters = { status: "", work_type: "", location: "", dateFrom: "", dateTo: "" };
+const permitDateFrom = document.getElementById("permit-date-from");
+const permitDateTo = document.getElementById("permit-date-to");
 
 function permitToken() {
   return localStorage.getItem("token") || localStorage.getItem("authToken");
@@ -98,13 +101,44 @@ async function permitRequest(path = "", options = {}) {
   return payload;
 }
 
-async function loadPermits(search = "") {
+function filteredPermits() {
+  const search = permitSearch.value.trim().toLowerCase();
+  return permits.filter(item => {
+    const startDate = String(permitValue(item, "start_date", "starts_at") || "").slice(0, 10);
+    const endDate = String(permitValue(item, "end_date", "ends_at") || "").slice(0, 10);
+    const text = [item.permit_number, item.code, item.permit_code, item.work_type, item.type, item.job_type, item.location, item.area, item.applicant, item.requested_by, item.requester, item.status].join(" ").toLowerCase();
+    return (!search || text.includes(search))
+      && (!permitFilters.status || permitValue(item, "status") === permitFilters.status)
+      && (!permitFilters.work_type || permitValue(item, "work_type", "type", "job_type") === permitFilters.work_type)
+      && (!permitFilters.location || permitValue(item, "location", "area") === permitFilters.location)
+      && (!permitFilters.dateFrom || (endDate !== "-" && endDate >= permitFilters.dateFrom))
+      && (!permitFilters.dateTo || (startDate !== "-" && startDate <= permitFilters.dateTo));
+  });
+}
+function refreshPermitTable() { const filtered = filteredPermits(); updatePermitStats(filtered); renderPermits(filtered); }
+function permitOptions(items, ...keys) {
+  return [...new Set(items.map(item => permitValue(item, ...keys)).filter(value => value !== "-"))].sort((a, b) => String(a).localeCompare(String(b), "id"));
+}
+function wirePermitFilters() {
+  const controls = [...document.querySelectorAll(".filter > button")];
+  const definitions = [["status", "Semua Status", ["status"]], ["work_type", "Semua Jenis Pekerjaan", ["work_type", "type", "job_type"]], ["location", "Semua Lokasi", ["location", "area"]]];
+  definitions.forEach(([key, label, fields], index) => {
+    const button = controls[index]; if (!button) return;
+    const select = document.createElement("select"); select.className = "permit-filter-select"; select.setAttribute("aria-label", label);
+    select.innerHTML = `<option value="">${label}</option>` + permitOptions(permits, ...fields).map(value => `<option value="${escapePermit(value)}">${escapePermit(value)}</option>`).join("");
+    select.addEventListener("change", event => { permitFilters[key] = event.target.value; refreshPermitTable(); });
+    button.replaceWith(select);
+  });
+  const reset = document.querySelector(".filter button:last-child");
+  if (reset && !reset.dataset.ready) { reset.dataset.ready = "1"; reset.addEventListener("click", () => { Object.keys(permitFilters).forEach(key => { permitFilters[key] = ""; }); permitSearch.value = ""; permitDateFrom.value = ""; permitDateTo.value = ""; document.querySelectorAll(".permit-filter-select").forEach(select => { select.value = ""; }); refreshPermitTable(); }); }
+}
+async function loadPermits() {
   permitBody.innerHTML = '<tr><td colspan="9">Memuat data izin kerja...</td></tr>';
   try {
-    const payload = await permitRequest(search ? `?search=${encodeURIComponent(search)}` : "");
+    const payload = await permitRequest("");
     permits = payload.data || [];
-    updatePermitStats(permits);
-    renderPermits(permits);
+    wirePermitFilters();
+    refreshPermitTable();
   } catch (error) {
     permitBody.innerHTML = `<tr><td colspan="9">${escapePermit(error.message)}</td></tr>`;
   }
@@ -132,7 +166,7 @@ async function savePermit(event) {
   try {
     await permitRequest("", { method: "POST", body: JSON.stringify(data) });
     closePermitModal();
-    await loadPermits(permitSearch.value.trim());
+    await loadPermits();
   } catch (error) {
     permitError.textContent = error.message;
   } finally {
@@ -144,7 +178,7 @@ async function deletePermit(id) {
   if (!Number.isFinite(id) || !window.confirm("Hapus izin kerja ini?")) return;
   try {
     await permitRequest(`/${id}`, { method: "DELETE" });
-    await loadPermits(permitSearch.value.trim());
+    await loadPermits();
   } catch (error) {
     window.alert(error.message);
   }
@@ -154,7 +188,9 @@ document.getElementById("add-permit-button").addEventListener("click", openPermi
 document.getElementById("close-permit-modal").addEventListener("click", closePermitModal);
 document.getElementById("cancel-permit-modal").addEventListener("click", closePermitModal);
 permitForm.addEventListener("submit", savePermit);
-permitSearch.addEventListener("input", event => loadPermits(event.target.value.trim()));
+permitSearch.addEventListener("input", refreshPermitTable);
+permitDateFrom.addEventListener("change", event => { permitFilters.dateFrom = event.target.value; refreshPermitTable(); });
+permitDateTo.addEventListener("change", event => { permitFilters.dateTo = event.target.value; refreshPermitTable(); });
 permitBody.addEventListener("click", event => {
   const button = event.target.closest("[data-delete-permit]");
   if (button) deletePermit(Number(button.dataset.deletePermit));

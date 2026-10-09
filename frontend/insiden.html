@@ -448,10 +448,12 @@
 
 
     <!-- DATE -->
-    <button type="button">
-      01/05/2024 - 15/05/2024
+    <div class="incident-date-filter" aria-label="Filter tanggal insiden">
       <i class="fa-regular fa-calendar"></i>
-    </button>
+      <input id="incident-date-from" type="date" aria-label="Tanggal mulai">
+      <span>-</span>
+      <input id="incident-date-to" type="date" aria-label="Tanggal selesai">
+    </div>
 
 
     <!-- RESET -->
@@ -907,7 +909,7 @@
      JAVASCRIPT
 ========================================================= -->
 <script src="attachments.js?v=10"></script>
-<script type="module" src="incident-script.js"></script>
+<script type="module" src="incident-script.js?v=3"></script>
 <script src="dashboard-login.js"></script>
 <script src="crud-edit.js?v=5"></script>
 <script src="topbar-live.js"></script>

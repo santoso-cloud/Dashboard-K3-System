@@ -100,7 +100,7 @@ body{background:#f8fafc;color:#0f172a;display:flex}
   display:grid;grid-template-columns:minmax(240px,2fr) repeat(4,minmax(140px,1fr)) minmax(190px,1.3fr) minmax(100px,.7fr);
   gap:12px;margin-bottom:18px;
 }
-.filter button,.search{
+.filter button,.filter select,.search{
   height:44px;border:1px solid #e2e8f0;background:white;border-radius:8px;
   padding:0 14px;display:flex;align-items:center;justify-content:space-between;
   color:#334155;font-size:13px;
@@ -256,6 +256,9 @@ th,td{
   .stats,.right,.filter{grid-template-columns:1fr}
   .pagination{flex-direction:column;gap:15px;align-items:flex-start}
 }
+.filter select{cursor:pointer;outline:0;}
+.risk-date-filter{height:44px;border:1px solid #e2e8f0;background:white;border-radius:8px;padding:0 10px;display:flex;align-items:center;gap:6px;color:#64748b;font-size:12px;min-width:0;}
+.risk-date-filter input{border:0;outline:0;color:#334155;font:inherit;min-width:0;width:100%;}
 
 @media(max-width:560px){
   .main{padding:18px 14px}
