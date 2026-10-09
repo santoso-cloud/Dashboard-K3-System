@@ -15,7 +15,7 @@ function applyProgressRule(status, progress) {
 	if (normalized === "Direncanakan") return 0;
 	if (normalized === "Selesai") return 100;
 	const value = Number(progress);
-	if (!Number.isInteger(value) || value < 20 || value > 70) throw new Error("Progress audit saat berjalan harus antara 20% sampai 70%");
+	if (!Number.isInteger(value) || value < 1 || value > 99) throw new Error("Progress audit saat berjalan harus antara 1% sampai 99%");
 	return value;
 }
 

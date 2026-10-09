@@ -272,9 +272,9 @@ function syncAuditProgress() {
   const status = normalizeAuditStatus(auditForm.elements.status.value);
   const progress = auditForm.elements.progress;
   const help = document.getElementById("audit-progress-help");
-  if (status === "planned") { progress.value = 0; progress.readOnly = true; progress.min = 0; progress.max = 0; help.textContent = "Direncanakan otomatis 0%"; }
-  else if (status === "completed") { progress.value = 100; progress.readOnly = true; progress.min = 100; progress.max = 100; help.textContent = "Selesai otomatis 100%"; }
-  else { progress.readOnly = false; progress.min = 20; progress.max = 70; progress.value = Math.min(70, Math.max(20, Number(progress.value) || 20)); help.textContent = "Berjalan dapat diisi antara 20% sampai 70%"; }
+  if (status === "planned") { progress.value = 0; progress.disabled = false; progress.readOnly = true; progress.min = 0; progress.max = 0; help.textContent = "Direncanakan otomatis 0%"; }
+  else if (status === "completed") { progress.value = 100; progress.disabled = false; progress.readOnly = true; progress.min = 100; progress.max = 100; help.textContent = "Selesai otomatis 100%"; }
+  else { progress.readOnly = false; progress.disabled = false; progress.min = 1; progress.max = 99; progress.value = Math.min(99, Math.max(1, Number(progress.value) || 1)); help.textContent = "Berjalan dapat diisi antara 1% sampai 99%"; }
 }
 
 function closeAuditModal() {
@@ -313,7 +313,7 @@ async function deleteAudit(id) {
 
 document.getElementById("add-audit-button").addEventListener("click", openAuditModal);
 auditForm.elements.status.addEventListener("change", syncAuditProgress);
-auditForm.elements.progress.addEventListener("input", () => { if (normalizeAuditStatus(auditForm.elements.status.value) === "in progress") auditForm.elements.progress.value = Math.min(70, Math.max(20, Number(auditForm.elements.progress.value) || 20)); });
+auditForm.elements.progress.addEventListener("input", () => { if (normalizeAuditStatus(auditForm.elements.status.value) === "in progress") auditForm.elements.progress.value = Math.min(99, Math.max(1, Number(auditForm.elements.progress.value) || 1)); });
 document.getElementById("close-audit-modal").addEventListener("click", closeAuditModal);
 document.getElementById("cancel-audit-modal").addEventListener("click", closeAuditModal);
 auditForm.addEventListener("submit", saveAudit);
