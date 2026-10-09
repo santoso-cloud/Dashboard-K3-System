@@ -22,7 +22,37 @@ app.use(cors({
 		return callback(new Error("Origin tidak diizinkan"));
 	}
 }));
-app.use(express.json({ limit: "32kb" }));
+app.use(express.json({ limit: process.env.MAX_UPLOAD_SIZE || "50mb" }));
+
+// Lampiran wajib untuk seluruh record K3. Tabel dibuat aman saat startup agar
+// instalasi existing dapat langsung memakai fitur ini.
+app.use(async (req, res, next) => {
+	try {
+		if (!app.locals.attachmentsReady) {
+			await pool.query(`CREATE TABLE IF NOT EXISTS record_attachments (
+				id BIGSERIAL PRIMARY KEY, entity_type VARCHAR(80) NOT NULL,
+				record_id BIGINT NOT NULL, file_name TEXT NOT NULL,
+				mime_type VARCHAR(255) NOT NULL, file_data BYTEA NOT NULL,
+				created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				UNIQUE(entity_type, record_id)
+			)`);
+			app.locals.attachmentsReady = true;
+		}
+		if (!app.locals.auditProgressReady) {
+			await pool.query("ALTER TABLE audits ADD COLUMN IF NOT EXISTS progress INTEGER NOT NULL DEFAULT 0");
+			app.locals.auditProgressReady = true;
+		}
+		next();
+	} catch (error) { next(error); }
+});
+
+app.use((req, res, next) => {
+	const attachmentRequired = ["/api/insiden", "/api/observasi", "/api/izin", "/api/training", "/api/apd", "/api/tindakan", "/api/pelaporan", "/api/risiko", "/api/pengguna"];
+	if (req.method === "POST" && attachmentRequired.some(prefix => req.path === prefix || req.path.startsWith(`${prefix}/`)) && !req.body?.__attachment) {
+		return res.status(400).json({ success: false, message: "Lampiran wajib diunggah" });
+	}
+	next();
+});
 
 app.get("/api/health", async (req, res, next) => {
 	try {
@@ -52,6 +82,7 @@ app.use("/api/pengguna", require("../routes/pengguna"));
 app.use("/api/risiko", require("../routes/risiko"));
 app.use("/api/tindakan", auth, require("../routes/tindakan"));
 app.use("/api/training", auth, require("../routes/training"));
+app.use("/api/attachments", require("../routes/attachments"));
 
 require("../../src/mount-register")(app, pool);
 

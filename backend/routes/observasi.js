@@ -44,6 +44,14 @@ router.get("/summary", auth, async (req, res) => {
   }
 });
 
+router.get("/inspection/:id", auth, async (req, res) => {
+  try {
+    const data = await crud.getOne("inspections", req.params.id);
+    if (!data) return res.status(404).json({ success: false, message: "Inspeksi tidak ditemukan" });
+    res.json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+});
+
 router.get("/:id", auth, async (req, res) => {
   try {
     res.json({
@@ -70,6 +78,14 @@ router.post("/", auth, async (req, res) => {
       message: error.message
     });
   }
+});
+
+router.put("/inspection/:id", auth, async (req, res) => {
+  try {
+    const data = await crud.update("inspections", req.params.id, req.body);
+    if (!data) return res.status(404).json({ success: false, message: "Inspeksi tidak ditemukan" });
+    res.json({ success: true, data });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
 });
 
 router.put("/:id", auth, async (req, res) => {

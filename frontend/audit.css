@@ -544,10 +544,17 @@ th,td{
 .side-card #audit-status-legend p{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px}
 .side-card #audit-status-legend p span{display:flex;align-items:center;min-width:0}
 .side-card #audit-status-legend .chart-dot{margin:0 8px 0 0}
-.audit-type-row{display:grid;grid-template-columns:minmax(70px,1fr) minmax(50px,90px) auto;align-items:center;gap:8px;margin:12px 0;font-size:12px}
+.audit-type-row{display:grid;grid-template-columns:minmax(0,1fr) 180px 48px;align-items:center;gap:12px;margin:14px 0;font-size:13px}
 .audit-type-row>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.audit-type-row>div{height:8px;background:#e5e7eb;border-radius:10px;overflow:hidden}
-.audit-type-row>div b{display:block;height:100%;border-radius:10px}
+.audit-type-row>div{height:9px;background:#e5e7eb;border-radius:10px;overflow:hidden}
+.audit-type-row>div b{display:block;height:100%;border-radius:10px;background:#059669!important;transition:width .3s ease}
+.audit-type-row>strong{text-align:right;color:#0f172a}
+.audit-row-progress{display:grid;grid-template-columns:42px minmax(70px,1fr);align-items:center;gap:8px;min-width:140px;color:#334155;font-size:12px;font-weight:700}
+.audit-row-progress>span{text-align:right}
+.audit-row-progress>div{height:8px;background:#e5e7eb;border-radius:10px;overflow:hidden}
+.audit-row-progress>div>b{display:block;height:100%;background:#059669;border-radius:10px;transition:width .3s ease}
+
+@media(max-width:900px){.audit-type-row{grid-template-columns:minmax(0,1fr) 130px 44px}.audit-row-progress{min-width:110px;grid-template-columns:36px minmax(55px,1fr)}}
 
 .side-card p{
   display:flex;
@@ -574,20 +581,22 @@ th,td{
   width:180px;
   height:100px;
   margin:10px auto 18px;
-  border-radius:180px 180px 0 0;
-  background:conic-gradient(from 270deg,#059669 0 76%,#e5e7eb 76% 100%);
+  position:relative;
   display:flex;
-  flex-direction:column;
   align-items:center;
-  justify-content:end;
-  padding-bottom:12px;
-  font-size:30px;
-  font-weight:800;
+  justify-content:center;
 }
 
-.gauge small{
+.audit-gauge-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.audit-gauge-track,.audit-gauge-progress{fill:none;stroke-width:16;stroke-linecap:butt}
+.audit-gauge-track{stroke:#e5e7eb}
+.audit-gauge-progress{stroke:#059669;transition:stroke-dashoffset .35s ease}
+.audit-gauge-value{position:absolute;left:0;right:0;bottom:17px;text-align:center;font-size:30px;font-weight:800;color:#0f172a;line-height:1}
+.gauge small,.audit-gauge-value small{
+  display:block;
   font-size:11px;
   font-weight:400;
+  margin-top:8px;
 }
 
 .bar{

@@ -20,6 +20,7 @@ function editToken() {
 }
 
 function editId(button) {
+  if (button.dataset.crudEdit) return button.dataset.crudEdit;
   const key = Object.keys(button.dataset).find((name) => {
     const normalized = name.toLowerCase();
     return normalized === "id" || normalized.startsWith("delete") || normalized.endsWith("id");
@@ -50,14 +51,34 @@ async function openEdit(button) {
   const form = document.querySelector(editConfig.form);
   const modal = document.querySelector(editConfig.modal);
   const data = payload.data || {};
+  window.__openingCrudEdit = true;
   document.querySelector(editConfig.add)?.click();
+  window.__openingCrudEdit = false;
   Object.entries(data).forEach(([name, value]) => {
     const input = form.elements.namedItem(name);
     if (input) input.value = formatFieldValue(value, input);
   });
+  form.elements.status?.dispatchEvent(new Event("change", { bubbles: true }));
 
   editState.id = id;
   editState.form = form;
+  window.__crudEditState = { id, endpoint: editConfig.endpoint };
+  form.dataset.editing = "true";
+  const attachmentEntity = editConfig.endpoint;
+  const attachmentInput = form.elements.attachment;
+  if (attachmentInput) {
+    attachmentInput.required = false;
+    const attachmentInfo = form.querySelector(".attachment-copy small");
+    if (attachmentInfo) {
+      try {
+        const attachmentResponse = await fetch(`http://localhost:5000/api/attachments/check/${attachmentEntity}/${id}`, { headers: { Authorization: `Bearer ${editToken()}` } });
+        const attachmentPayload = await attachmentResponse.json().catch(() => ({}));
+        attachmentInfo.textContent = attachmentResponse.ok
+          ? `File saat ini: ${attachmentPayload.data.file_name} · pilih file baru untuk mengganti`
+          : "Belum ada file · pilih file jika ingin menambahkan";
+      } catch { attachmentInfo.textContent = "File lama tidak dapat diperiksa · pilih file baru jika diperlukan"; }
+    }
+  }
   const heading = modal.querySelector("h2");
   if (heading) heading.textContent = "Edit Data";
 }
@@ -82,6 +103,8 @@ async function submitEdit(event) {
     });
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(payload.message || "Data gagal diperbarui");
+    window.__crudEditState = null;
+    form.removeAttribute("data-editing");
     location.reload();
   } catch (requestError) {
     error.textContent = requestError.message;
@@ -103,6 +126,27 @@ function addEditButtons() {
 }
 
 if (editConfig) {
+  const createTitles = {
+    insiden: "Tambah Insiden", observasi: "Buat Observasi / Inspeksi", izin: "Buat Izin Kerja",
+    training: "Buat Training Baru", apd: "Tambah APD / Peralatan", dokumen: "Tambah Dokumen",
+    audit: "Jadwalkan Audit", pelaporan: "Buat Laporan Baru", risiko: "Tambah Risiko Baru"
+  };
+  document.querySelector(editConfig.add)?.addEventListener("click", () => {
+    if (window.__openingCrudEdit) return;
+    editState.id = null;
+    editState.form = null;
+    window.__crudEditState = null;
+    const form = document.querySelector(editConfig.form);
+    form?.removeAttribute("data-editing");
+    const modal = document.querySelector(editConfig.modal);
+    const heading = modal?.querySelector("h2");
+    if (heading && createTitles[editConfig.endpoint]) heading.textContent = createTitles[editConfig.endpoint];
+    if (form?.elements.attachment) {
+      form.elements.attachment.required = !["dokumen", "audit"].includes(editConfig.endpoint);
+      const info = form.querySelector(".attachment-copy small");
+      if (info) info.textContent = "Belum ada file dipilih · PNG, JPG/JPEG, atau PDF";
+    }
+  }, true);
   const observer = new MutationObserver(addEditButtons);
   observer.observe(document.body, { childList: true, subtree: true });
   document.addEventListener("click", (event) => {

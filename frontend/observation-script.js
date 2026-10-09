@@ -192,7 +192,7 @@ function renderObservations() {
     const actions = item.source === "observation"
       ? `<button type="button" data-delete-observation="${item.sourceId}" title="Hapus">Hapus</button>`
       : "-";
-    return `<tr>
+    return `<tr data-record-source="${item.source}">
       <td>${start + index + 1}</td>
       <td>${escapeObservation(formatObservationDate(item.date))}</td>
       <td><span class="tag blue-tag">${escapeObservation(item.type)}</span></td>

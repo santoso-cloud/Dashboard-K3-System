@@ -57,7 +57,7 @@ function renderAuditRows(items) {
   const tableInfo = document.getElementById("audit-table-info");
   tableInfo.textContent = items.length ? `Menampilkan ${items.length} audit` : "Menampilkan 0 audit";
   if (!items.length) {
-    auditBody.innerHTML = '<tr><td colspan="9">Tidak ada data audit.</td></tr>';
+    auditBody.innerHTML = '<tr><td colspan="10">Tidak ada data audit.</td></tr>';
     return;
   }
 
@@ -75,6 +75,7 @@ function renderAuditRows(items) {
       <td>${escapeAudit(auditValue(item, "auditor", "lead_auditor", "auditor_name"))}</td>
       <td>${escapeAudit(formattedDate)}</td>
       <td><span class="badge ${statusClass(status)}">${escapeAudit(auditStatusLabel(status))}</span></td>
+      <td><div class="audit-row-progress"><span>${Math.max(0, Math.min(100, Number(item.progress ?? 0)))}%</span><div><b style="width:${Math.max(0, Math.min(100, Number(item.progress ?? 0)))}%"></b></div></div></td>
       <td>${escapeAudit(auditValue(item, "findings", "finding_count", "total_findings"))}</td>
       <td><button type="button" data-delete-audit="${id}" title="Hapus">Hapus</button></td>
     </tr>`;
@@ -94,19 +95,21 @@ function updateAuditStats(items) {
   document.getElementById("audit-stat-findings").textContent = findings;
   const completionRate = items.length ? Math.round((completed / items.length) * 100) : 0;
   const gauge = document.getElementById("audit-completion-gauge");
-  gauge.innerHTML = `${completionRate}%<small>Audit selesai</small>`;
-  gauge.style.background = `conic-gradient(from 270deg,#059669 0 ${completionRate}%,#e5e7eb ${completionRate}% 100%)`;
+  const arcLength = 251.33;
+  const arcOffset = arcLength * (1 - completionRate / 100);
+  gauge.innerHTML = `<svg class="audit-gauge-svg" viewBox="0 0 180 105" aria-hidden="true"><path class="audit-gauge-track" d="M 10 92 A 80 80 0 0 1 170 92"></path><path class="audit-gauge-progress" d="M 10 92 A 80 80 0 0 1 170 92" style="stroke-dasharray:${arcLength};stroke-dashoffset:${arcOffset}"></path></svg><span class="audit-gauge-value">${completionRate}%<small>Audit selesai</small></span>`;
+  gauge.style.background = "transparent";
   document.getElementById("audit-completion-summary").textContent = `${completed} dari ${items.length} audit selesai`;
 }
 
 function renderCharts(items) {
   const statusCounts = new Map();
-  const typeCounts = new Map();
+  const typeGroups = new Map();
   items.forEach(item => {
     const status = normalizeAuditStatus(item.status);
     const type = item.type || "Tanpa jenis";
     statusCounts.set(status, (statusCounts.get(status) || 0) + 1);
-    typeCounts.set(type, (typeCounts.get(type) || 0) + 1);
+    const group = typeGroups.get(type) || { count: 0, progress: 0 }; group.count += 1; group.progress += Math.max(0, Math.min(100, Number(item.progress ?? 0))); typeGroups.set(type, group);
   });
 
   const statuses = [...statusCounts.entries()].sort((first, second) => second[1] - first[1]);
@@ -127,14 +130,13 @@ function renderCharts(items) {
       </p>`).join("")
     : '<p class="chart-empty">Belum ada data status.</p>';
 
-  const types = [...typeCounts.entries()].sort((first, second) => second[1] - first[1]);
-  const max = Math.max(...types.map(([, count]) => count), 1);
+  const types = [...typeGroups.entries()].sort((first, second) => second[1].count - first[1].count);
   document.getElementById("audit-type-chart").innerHTML = types.length
-    ? types.map(([type, count], index) => `<div class="audit-type-row">
+    ? types.map(([type, group], index) => { const progress = Math.round(group.progress / group.count); return `<div class="audit-type-row">
         <span title="${escapeAudit(type)}">${escapeAudit(type)}</span>
-        <div><b style="width:${Math.round((count / max) * 100)}%;background:${chartColors[index % chartColors.length]}"></b></div>
-        <strong>${count} (${Math.round((count / items.length) * 100)}%)</strong>
-      </div>`).join("")
+        <div><b style="width:${progress}%"></b></div>
+        <strong>${progress}%</strong>
+      </div>`; }).join("")
     : '<p class="chart-empty">Belum ada data jenis audit.</p>';
 }
 
@@ -253,9 +255,26 @@ async function loadAudits() {
 
 function openAuditModal() {
   auditForm.reset();
+  auditForm.elements.progress.value = 0;
+  const heading = auditModal.querySelector("h2");
+  if (heading) heading.textContent = "Jadwalkan Audit";
+  if (auditForm.elements.attachment) {
+    auditForm.elements.attachment.required = false;
+    const attachmentInfo = auditForm.querySelector(".attachment-copy small");
+    if (attachmentInfo) attachmentInfo.textContent = "Belum ada file dipilih · PNG, JPG/JPEG, atau PDF";
+  }
   auditError.textContent = "";
   auditModal.hidden = false;
   auditForm.elements.name.focus();
+}
+
+function syncAuditProgress() {
+  const status = normalizeAuditStatus(auditForm.elements.status.value);
+  const progress = auditForm.elements.progress;
+  const help = document.getElementById("audit-progress-help");
+  if (status === "planned") { progress.value = 0; progress.readOnly = true; progress.min = 0; progress.max = 0; help.textContent = "Direncanakan otomatis 0%"; }
+  else if (status === "completed") { progress.value = 100; progress.readOnly = true; progress.min = 100; progress.max = 100; help.textContent = "Selesai otomatis 100%"; }
+  else { progress.readOnly = false; progress.min = 20; progress.max = 70; progress.value = Math.min(70, Math.max(20, Number(progress.value) || 20)); help.textContent = "Berjalan dapat diisi antara 20% sampai 70%"; }
 }
 
 function closeAuditModal() {
@@ -293,6 +312,8 @@ async function deleteAudit(id) {
 }
 
 document.getElementById("add-audit-button").addEventListener("click", openAuditModal);
+auditForm.elements.status.addEventListener("change", syncAuditProgress);
+auditForm.elements.progress.addEventListener("input", () => { if (normalizeAuditStatus(auditForm.elements.status.value) === "in progress") auditForm.elements.progress.value = Math.min(70, Math.max(20, Number(auditForm.elements.progress.value) || 20)); });
 document.getElementById("close-audit-modal").addEventListener("click", closeAuditModal);
 document.getElementById("cancel-audit-modal").addEventListener("click", closeAuditModal);
 auditForm.addEventListener("submit", saveAudit);

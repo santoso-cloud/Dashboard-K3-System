@@ -194,7 +194,8 @@
               <th>Lokasi / Area</th>
               <th>Lead Auditor</th>
               <th>Tanggal Audit</th>
-              <th>Status</th>
+            <th>Status</th>
+            <th>Progress</th>
               <th>Temuan</th>
               <th>Aksi</th>
             </tr>
@@ -257,14 +258,16 @@
       <label>Lead Auditor<input name="auditor" maxlength="120"></label>
       <label>Tanggal Audit<input name="audit_date" type="date" required></label>
       <label>Status<select name="status" required><option value="Direncanakan">Direncanakan</option><option value="Berjalan">Berjalan</option><option value="Selesai">Selesai</option></select></label>
+      <label>Progress (%)<input name="progress" type="number" min="0" max="100" step="1" value="0" required><small id="audit-progress-help">Direncanakan otomatis 0%</small></label>
       <p id="audit-form-error" role="alert"></p>
       <div class="audit-form-actions"><button id="cancel-audit-modal" type="button">Batal</button><button type="submit">Simpan</button></div>
     </form>
   </div>
 
-  <script type="module" src="audit-script.js"></script>
+  <script src="attachments.js?v=10"></script>
+  <script type="module" src="audit-script.js?v=6"></script>
   <script src="dashboard-login.js"></script>
-  <script src="crud-edit.js"></script>
+  <script src="crud-edit.js?v=6"></script>
   <script src="topbar-live.js"></script>
   <script src="sidebar-live.js"></script>
 </body>

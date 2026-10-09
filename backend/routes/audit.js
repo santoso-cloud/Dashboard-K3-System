@@ -4,6 +4,20 @@ const crud = require("../utils/crud");
 
 const router = express.Router();
 const TABLE = "audits";
+function normalizedStatus(status) {
+	const value = String(status || "").trim().toLowerCase();
+	if (/selesai|completed|closed/.test(value)) return "Selesai";
+	if (/berjalan|progress|ongoing|in progress/.test(value)) return "Berjalan";
+	return "Direncanakan";
+}
+function applyProgressRule(status, progress) {
+	const normalized = normalizedStatus(status);
+	if (normalized === "Direncanakan") return 0;
+	if (normalized === "Selesai") return 100;
+	const value = Number(progress);
+	if (!Number.isInteger(value) || value < 20 || value > 70) throw new Error("Progress audit saat berjalan harus antara 20% sampai 70%");
+	return value;
+}
 
 router.get("/", auth, async (req, res) => {
 	try {
@@ -48,7 +62,8 @@ router.get("/:id", auth, async (req, res) => {
 
 router.post("/", auth, async (req, res) => {
 	try {
-		const data = await crud.create(TABLE, req.body);
+		const body = { ...req.body, status: normalizedStatus(req.body.status), progress: applyProgressRule(req.body.status, req.body.progress ?? 0) };
+		const data = await crud.create(TABLE, body);
 		res.status(201).json({
 			success: true,
 			message: "Data audit berhasil ditambahkan",
@@ -66,7 +81,10 @@ router.post("/", auth, async (req, res) => {
 
 router.put("/:id", auth, async (req, res) => {
 	try {
-		const data = await crud.update(TABLE, req.params.id, req.body);
+		const current = await crud.getOne(TABLE, req.params.id);
+		if (!current) return res.status(404).json({ success: false, message: "Data audit tidak ditemukan" });
+		const body = { ...req.body, status: normalizedStatus(req.body.status ?? current.status), progress: applyProgressRule(req.body.status ?? current.status, req.body.progress ?? current.progress ?? 0) };
+		const data = await crud.update(TABLE, req.params.id, body);
 
 		if (!data) {
 			return res.status(404).json({
